@@ -61,14 +61,33 @@ export function jsonToFile(jsonData, outputPath) {
 function normalizeRow(row) {
     return Object.fromEntries(
         Object.entries(row).map(([key, value]) => {
-            if (!ARRAY_KEYS.includes(key)) return [key, value];
+            if (typeof value === "string") value = value.trim();
+            let val = parseValue(value);
+            if (!ARRAY_KEYS.includes(key)) return [key, val];
 
-            if (typeof value === "string" && value.includes(",")) {
-                return [key, value.split(",").map(x => x.trim())];
-            }
-            return [key, value];
+            let vals = typeof val === "string" 
+                ? val.split(",").map(x => x.trim())
+                : [val];
+                return [key, vals];
         })
     );
+}
+
+function parseValue(value) {
+    const str = String(value).trim();
+    if (/^[+-]?\d+$/.test(str)) {
+        return Number(str);
+    }
+
+    if (/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(str)) {
+        return Number(str);
+    }
+
+    if (str === "true" || str === "false") {
+        return Boolean(str)
+    }
+
+    return value;
 }
 
 function toCamelCase(str) {
