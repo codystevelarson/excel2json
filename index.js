@@ -3,9 +3,8 @@ import { parse } from 'csv-parse';
 import path from 'path';
 import fs from 'fs';
 
-const ARRAY_KEYS = [
-    
-];
+const [, , input, output, arrayKeysArg] = process.argv;
+const ARRAY_KEYS = arrayKeysArg ? arrayKeysArg.split(',').map(k => k.trim()) : [];
 
 const SUPPORTED_TYPES = ['csv', 'xlsx', 'xls'];
 
@@ -89,8 +88,6 @@ function mapRowKeysToCamelCase(row) {
 }
 
 // CLI
-const [, , input, output] = process.argv;
-
 if (!input) {
     console.error("Missing input path");
     process.exit(1);
